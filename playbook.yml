@@ -1,0 +1,73 @@
+---
+
+- hosts: localhost
+  tasks:
+    - block:
+
+      - name: "Provision | oVirt auth "
+        no_log: true
+        ovirt_auth:
+          url: "{{ ovirt_url }}"
+          username: "{{ ovirt_username }}"
+          password: "{{ ovirt_password }}"
+          ca_file: "{{ ovirt_ca_file }}"
+
+      - name: "Provision | VM set up"
+        ovirt_vms:
+          auth: "{{ ovirt_auth }}"
+          template: "{{ ovirt_template }}"
+          state: "present"
+          name: "{{ vm_hostname }}"
+          cluster: "{{ ovirt_cluster }}"
+          cpu_cores: "{{ vm_cpu_cores }}"
+          high_availability: "{{ vm_high_availability }}"
+          memory: "{{ vm_memory }}"
+          memory_guaranteed: "{{ vm_memory_guaranteed }}"
+          cloud_init:
+            host_name: "{{ vm_hostname }}"
+            authorized_ssh_keys: "{{ public_key }}"
+            custom_script: |
+              write_files:
+               - content: |
+                   TYPE=Ethernet
+                   BOOTPROTO=static
+                   DEFROUTE=yes
+                   PEERDNS=yes
+                   PEERROUTES=yes
+                   ONBOOT=yes
+                   NM_CONTROLLED=no
+                   NAME={{ vm_nic_device }}
+                   DEVICE={{ vm_nic_device }}
+                   IPADDR={{ vm_ipv4_address }}
+                   GATEWAY={{ vm_ipv4_gateway }}
+                   DNS1={{ vm_dns1 }}
+                   DNS2={{ vm_dns2 }}
+                   DNS3={{ vm_dns3 }}
+                   DOMAIN={{ vm_domain }}
+                 path: /etc/sysconfig/network-scripts/ifcfg-{{ vm_nic_device }}
+                 permissions: '0644'
+            user_name: root
+            root_password: "{{ vm_root_password }}"
+
+      always:
+      - name: "Provision | Always revoke oVirt auth token"
+        ovirt_auth:
+          state: absent
+          ovirt_auth: "{{ ovirt_auth }}"
+
+    - name: "Provision | Add host to inventory"
+      add_host:
+        hostname: "{{ vm_hostname }}"
+        ansible_connection: ssh
+        ansible_ssh_user: root
+        ansible_ssh_host: "{{ vm_ipv4_address }}"
+
+    - name: "Provision | Wait for SSH port response"
+      wait_for:
+        state: started
+        host: "{{ vm_ipv4_address }}"
+        port: 22
+
+- hosts: "{{ vm_hostname }}"
+  roles:
+    - "{{ role_name }}"

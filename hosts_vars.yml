@@ -1,0 +1,23 @@
+---
+public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+vm_hostname: test-hml.mydomain.com
+vm_ipv4_address: 172.26.16.20
+vm_ipv4_netmask: 255.255.255.0
+vm_ipv4_gateway: 172.26.16.1
+vm_dns1: 10.0.1.1
+vm_dns2: 10.0.1.2
+vm_domain: mydomain.com
+vm_root_password: mypassword
+vm_cpu_cores: 1
+vm_memory: 2048MiB
+vm_memory_guaranteed: 1024MiB
+vm_high_availability: false
+vm_nic_device: eth0
+ovirt_url: https://ovirt.mydomain.com/ovirt-engine/api
+ovirt_node: node1
+ovirt_cluster: cluster1
+ovirt_template: template-centos7.2
+ovirt_username: admin@internal
+ovirt_password: "{{ lookup('file', 'ovirt_password.yml') }}"
+ovirt_ca_file: ~/.ssh/ca.pem
+role_name: test-role

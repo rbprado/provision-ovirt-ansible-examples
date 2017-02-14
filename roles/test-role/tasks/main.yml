@@ -1,0 +1,9 @@
+---
+
+- name: "Role | Install epel repository and update yum cache"
+  yum: update_cache=yes name=epel-release
+
+- name: "Role | Install package tree"
+  yum:
+    name: tree
+    state: present
