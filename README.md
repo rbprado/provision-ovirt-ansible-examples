@@ -28,7 +28,7 @@ Run the following command in order to provision the VM over oVirt:
 ```
 $ ansible-playbook playbook.yml -e @hosts_vars.yml --ask-vault-pass
 ```
-Note: The option `--ask-vault-pass` just is needed in case of the file ovirt_password.yml has been encrypted with ansible-vault.
+Note: The option `--ask-vault-pass` just is needed in case of the file ovirt_password.yml has been encrypted with ansible-vault, in this case the vault password is `123`.
 
 ###References
 
