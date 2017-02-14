@@ -26,8 +26,9 @@ Edit the file hosts_vars.yml according the needs of the service which is going t
 Run the following command in order to provision the VM over oVirt:
 
 ```
-$ ansible-playbook playbook.yml -e @hosts_vars.yml
+$ ansible-playbook playbook.yml -e @hosts_vars.yml --ask-vault-pass
 ```
+Note: The option `--ask-vault-pass` just is needed in case of the file ovirt_password.yml has been encrypted with ansible-vault.
 
 ###References
 
